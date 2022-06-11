@@ -110,7 +110,7 @@ class ClassDataset(Dataset):
     def __len__(self):
         return len(self.imgs_files)
 
-KEYPOINTS_FOLDER_TRAIN = 'glue_tubes_keypoints_dataset_134imgs/train'
+KEYPOINTS_FOLDER_TRAIN = 'voc/train'
 dataset = ClassDataset(KEYPOINTS_FOLDER_TRAIN, transform=train_transform(), demo=True)
 data_loader = DataLoader(dataset, batch_size=1, shuffle=True, collate_fn=collate_fn)
 
@@ -123,7 +123,7 @@ print("Transformed targets:\n", batch[1])
 keypoints_classes_ids2names = {0: 'Head', 1: 'Tail'}
 
 def visualize(image, bboxes, keypoints, image_original=None, bboxes_original=None, keypoints_original=None):
-    fontsize = 18
+    fontsize = 2
 
     for bbox in bboxes:
         start_point = (bbox[0], bbox[1])
@@ -147,7 +147,7 @@ def visualize(image, bboxes, keypoints, image_original=None, bboxes_original=Non
         
         for kps in keypoints_original:
             for idx, kp in enumerate(kps):
-                image_original = cv2.circle(image_original, tuple(kp), 5, (255,0,0), 10)
+                image_original = cv2.circle(image_original, tuple(kp), 1, (255,0,0), 2)
                 image_original = cv2.putText(image_original, " " + keypoints_classes_ids2names[idx], tuple(kp), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0), 3, cv2.LINE_AA)
 
         f, ax = plt.subplots(1, 2, figsize=(40, 20))
@@ -157,7 +157,8 @@ def visualize(image, bboxes, keypoints, image_original=None, bboxes_original=Non
 
         ax[1].imshow(image)
         ax[1].set_title('Transformed image', fontsize=fontsize)
-        
+    plt.savefig("test.png", bbox_inches='tight')
+    
 image = (batch[0][0].permute(1,2,0).numpy() * 255).astype(np.uint8)
 bboxes = batch[1][0]['boxes'].detach().cpu().numpy().astype(np.int32).tolist()
 
@@ -173,6 +174,8 @@ for kps in batch[3][0]['keypoints'].detach().cpu().numpy().astype(np.int32).toli
     keypoints_original.append([kp[:2] for kp in kps])
 
 visualize(image, bboxes, keypoints, image_original, bboxes_original, keypoints_original)
+
+exitttt
 
 def get_model(num_keypoints, weights_path=None):
     
@@ -191,8 +194,8 @@ def get_model(num_keypoints, weights_path=None):
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-KEYPOINTS_FOLDER_TRAIN = 'glue_tubes_keypoints_dataset_134imgs/train'
-KEYPOINTS_FOLDER_TEST = 'glue_tubes_keypoints_dataset_134imgs/test'
+KEYPOINTS_FOLDER_TRAIN = 'voc/train'
+KEYPOINTS_FOLDER_TEST = 'voc/test'
 
 dataset_train = ClassDataset(KEYPOINTS_FOLDER_TRAIN, transform=train_transform(), demo=False)
 dataset_test = ClassDataset(KEYPOINTS_FOLDER_TEST, transform=None, demo=False)
@@ -209,6 +212,7 @@ lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.3
 num_epochs = 5
 
 for epoch in range(num_epochs):
+    print(epoch)
     train_one_epoch(model, optimizer, data_loader_train, device, epoch, print_freq=1000)
     lr_scheduler.step()
     evaluate(model, data_loader_test, device)

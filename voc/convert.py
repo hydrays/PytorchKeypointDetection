@@ -79,7 +79,7 @@ def crowdhuman2voc(odgt_path, json_path):
                 ignore = gt_box[j]['head_attr']['ignore']
             if "ignore" in gt_box[j]['extra']:
                 ignore = gt_box[j]['extra']['ignore']
-            if ( (bbox[0] < bbox[2]) & (bbox[1] < bbox[3]) & (hbox[0] < hbox[2]) & (hbox[1] < hbox[3]) ):
+            if ( ignore==0 & (bbox[0] < bbox[2]) & (bbox[1] < bbox[3]) & (hbox[0] < hbox[2]) & (hbox[1] < hbox[3]) ):
                 json_dict['bboxes'].append(bbox)            
                 json_dict['keypoints'].append(kpset)
                 print(im.size, bbox)
