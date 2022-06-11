@@ -82,7 +82,7 @@ def crowdhuman2voc(odgt_path, json_path):
             if ( ignore==0 & (bbox[0] < bbox[2]) & (bbox[1] < bbox[3]) & (hbox[0] < hbox[2]) & (hbox[1] < hbox[3]) ):
                 json_dict['bboxes'].append(bbox)            
                 json_dict['keypoints'].append(kpset)
-                print(im.size, bbox)
+                #print(im.size, bbox)
                 
         print(f'output file {i}: {j}')
         #print(osp.join(odgt_path, image_file_name))
